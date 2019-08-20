@@ -1,0 +1,18 @@
+{
+  "announcers": [
+    {
+      "api": "legacy",
+      "version": "0.3.7"
+    },
+    {
+      "api": "legacy",
+      "version": "0.3.DL"
+    },
+    {
+      "api": "samp-servers-api"
+    }
+  ],
+  "ipv4ServiceURIs": [
+    "https://ipv4.icanhazip.com/"
+  ]
+}
