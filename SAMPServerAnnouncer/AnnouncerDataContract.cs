@@ -74,7 +74,7 @@ namespace SAMPServerAnnouncer
         /// <summary>
         /// Is valid
         /// </summary>
-        public bool IsValid => ((Host.Length > 0) && (Port > 0) && (Referer.Length > 0) && (UserAgent.Length > 0) && (Version.Length > 0));
+        public bool IsValid => ((Host.Length > 0) && (Port > 0) && (UserAgent.Length > 0));
 
         /// <summary>
         /// API
@@ -121,7 +121,7 @@ namespace SAMPServerAnnouncer
                             host = "server.sa-mp.com";
                             break;
                         case EAnnouncerAPI.SAMPServersAPI:
-                            host = "samp-servers.net";
+                            host = "api.samp-servers.net";
                             break;
                         default:
                             host = string.Empty;

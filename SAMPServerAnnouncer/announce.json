@@ -9,10 +9,13 @@
       "version": "0.3.DL"
     },
     {
-      "api": "samp-servers-api"
+      "api": "samp-servers-api",
+      "useHTTPS": true
     }
   ],
+  "errorLogPath": "announce-error.log",
   "ipv4ServiceURIs": [
     "https://ipv4.icanhazip.com/"
-  ]
+  ],
+  "logPath": "announce.log"
 }

@@ -127,7 +127,7 @@ namespace SAMPServerAnnouncer
                                     }
                                     if ((announcer.API != EAnnouncerAPI.SAMPServersAPI) || (ipv4_address != null))
                                     {
-                                        announcer_clients.Add(new AnnouncerClient(announcer.API, announcer.UseCustomServerInfo ? config.CustomServerInfo : null, announcer.Host, announcer.Method, (announcer.API == EAnnouncerAPI.SAMPServersAPI) ? ipv4_address : string.Empty, announcer.Port, announcer.Referer, announcer.UseHTTPS, announcer.UserAgent, announcer.Version));
+                                        announcer_clients.Add(new AnnouncerClient(announcer.API, config.ErrorLogPath, announcer.UseCustomServerInfo ? config.CustomServerInfo : null, announcer.Host, (announcer.API == EAnnouncerAPI.SAMPServersAPI) ? ipv4_address : string.Empty, config.LogPath, announcer.Method, announcer.Port, announcer.Referer, announcer.UseHTTPS, announcer.UserAgent, announcer.Version));
                                     }
                                 }
                             }

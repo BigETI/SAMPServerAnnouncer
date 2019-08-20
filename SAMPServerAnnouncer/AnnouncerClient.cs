@@ -21,19 +21,29 @@ namespace SAMPServerAnnouncer
         private static readonly DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(SAMPServersAPIRequestDataContract), new DataContractJsonSerializerSettings { UseSimpleDictionaryFormat = true });
 
         /// <summary>
+        /// Error log path
+        /// </summary>
+        private string errorLogPath;
+
+        /// <summary>
         /// Host
         /// </summary>
         private string host;
 
         /// <summary>
-        /// MEthod
-        /// </summary>
-        private string method;
-
-        /// <summary>
         /// IPv4 address
         /// </summary>
         private string ipv4Address;
+
+        /// <summary>
+        /// Log path
+        /// </summary>
+        private string logPath;
+
+        /// <summary>
+        /// MEthod
+        /// </summary>
+        private string method;
 
         /// <summary>
         /// Referer
@@ -61,6 +71,21 @@ namespace SAMPServerAnnouncer
         public SAMPServersAPIRequestDataContract CustomServerInfo { get; private set; }
 
         /// <summary>
+        /// Error log path
+        /// </summary>
+        private string ErrorLogPath
+        {
+            get
+            {
+                if (errorLogPath == null)
+                {
+                    errorLogPath = string.Empty;
+                }
+                return errorLogPath;
+            }
+        }
+
+        /// <summary>
         /// Host
         /// </summary>
         public string Host
@@ -76,21 +101,6 @@ namespace SAMPServerAnnouncer
         }
 
         /// <summary>
-        /// Method
-        /// </summary>
-        public string Method
-        {
-            get
-            {
-                if (method == null)
-                {
-                    method = ((API == EAnnouncerAPI.SAMPServersAPI) ? WebRequestMethods.Http.Post : WebRequestMethods.Http.Get);
-                }
-                return method;
-            }
-        }
-
-        /// <summary>
         /// IPv4 address
         /// </summary>
         public string IPv4Address
@@ -102,6 +112,36 @@ namespace SAMPServerAnnouncer
                     ipv4Address = string.Empty;
                 }
                 return ipv4Address;
+            }
+        }
+
+        /// <summary>
+        /// Log path
+        /// </summary>
+        public string LogPath
+        {
+            get
+            {
+                if (logPath == null)
+                {
+                    logPath = string.Empty;
+                }
+                return logPath;
+            }
+        }
+
+        /// <summary>
+        /// Method
+        /// </summary>
+        public string Method
+        {
+            get
+            {
+                if (method == null)
+                {
+                    method = ((API == EAnnouncerAPI.SAMPServersAPI) ? WebRequestMethods.Http.Post : WebRequestMethods.Http.Get);
+                }
+                return method;
             }
         }
 
@@ -165,26 +205,52 @@ namespace SAMPServerAnnouncer
         /// </summary>
         /// <param name="api">API</param>
         /// <param name="customServerInfo">Custom server information</param>
+        /// <param name="errorLogPath">Error log path</param>
         /// <param name="host">Host</param>
-        /// <param name="method">Method</param>
         /// <param name="ipv4Address">IPv4 address</param>
+        /// <param name="logPath">Log path</param>
+        /// <param name="method">Method</param>
         /// <param name="port">Port</param>
         /// <param name="referer">Referer</param>
         /// <param name="useHTTPS">Use HTTPS</param>
         /// <param name="userAgent">User agent</param>
         /// <param name="version">Version</param>
-        internal AnnouncerClient(EAnnouncerAPI api, SAMPServersAPIRequestDataContract customServerInfo, string host, string method, string ipv4Address, ushort port, string referer, bool useHTTPS, string userAgent, string version)
+        internal AnnouncerClient(EAnnouncerAPI api, string errorLogPath, SAMPServersAPIRequestDataContract customServerInfo, string host, string ipv4Address, string logPath, string method, ushort port, string referer, bool useHTTPS, string userAgent, string version)
         {
             API = api;
+            this.errorLogPath = errorLogPath;
             CustomServerInfo = ((api == EAnnouncerAPI.SAMPServersAPI) ? customServerInfo : null);
             this.host = host;
-            this.method = method;
             this.ipv4Address = ipv4Address;
+            this.logPath = logPath;
+            this.method = method;
             Port = port;
             this.referer = referer;
             UseHTTPS = useHTTPS;
             this.userAgent = userAgent;
             this.version = version;
+        }
+
+        /// <summary>
+        /// Log message
+        /// </summary>
+        /// <param name="message">Message</param>
+        /// <param name="isError">Is error</param>
+        private void Log(object message, bool isError)
+        {
+            try
+            {
+                (isError ? Console.Error : Console.Out)?.WriteLine(message);
+                string path = (isError ? ErrorLogPath : LogPath);
+                if (!(string.IsNullOrWhiteSpace(path)))
+                {
+                    File.AppendAllText(path, (message == null) ? "null" : message.ToString() + Environment.NewLine, Encoding.UTF8);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e);
+            }
         }
 
         /// <summary>
@@ -221,10 +287,14 @@ namespace SAMPServerAnnouncer
                                     uri_builder = new StringBuilder();
                                     uri_builder.Append(UseHTTPS ? "https://" : "http://");
                                     uri_builder.Append(Host);
-                                    uri_builder.Append("/v2/server/");
-                                    uri_builder.Append(IPv4Address);
-                                    uri_builder.Append(":");
-                                    uri_builder.Append(Port.ToString());
+                                    uri_builder.Append("/v2/server");
+                                    if (CustomServerInfo == null)
+                                    {
+                                        uri_builder.Append("/");
+                                        uri_builder.Append(IPv4Address);
+                                        uri_builder.Append(":");
+                                        uri_builder.Append(Port.ToString());
+                                    }
                                 }
                                 break;
                         }
@@ -233,6 +303,7 @@ namespace SAMPServerAnnouncer
                             HttpWebRequest http_web_request = WebRequest.CreateHttp(uri_builder.ToString());
                             if (http_web_request != null)
                             {
+                                Log("Requesting at \"" + http_web_request.Address + "\" with API \"" + API + "\"...", false);
                                 http_web_request.Headers.Add(HttpRequestHeader.Accept, "*/*");
                                 if (!(string.IsNullOrWhiteSpace(UserAgent)))
                                 {
@@ -246,14 +317,33 @@ namespace SAMPServerAnnouncer
                                 http_web_request.Method = Method;
                                 if (CustomServerInfo != null)
                                 {
-                                    using (Stream request_stream = http_web_request.GetRequestStream())
+                                    http_web_request.ContentType = "application/json";
+                                    using (MemoryStream request_memory_stream = new MemoryStream())
                                     {
-                                        serializer.WriteObject(request_stream, CustomServerInfo);
+                                        serializer.WriteObject(request_memory_stream, CustomServerInfo);
+                                        request_memory_stream.Seek(0L, SeekOrigin.Begin);
+                                        http_web_request.ContentLength = request_memory_stream.Length;
+                                        using (Stream request_stream = http_web_request.GetRequestStream())
+                                        {
+                                            if (request_stream != null)
+                                            {
+                                                request_memory_stream.CopyTo(request_stream);
+                                            }
+                                        }
+#if DEBUG
+                                        request_memory_stream.Seek(0L, SeekOrigin.Begin);
+                                        byte[] data = new byte[request_memory_stream.Length];
+                                        if (request_memory_stream.Read(data) == data.Length)
+                                        {
+                                            Log(Encoding.UTF8.GetString(data), false);
+                                        }
+#endif
                                     }
                                 }
                                 using (HttpWebResponse response = http_web_request.GetResponse() as HttpWebResponse)
                                 {
                                     r = response.StatusCode;
+                                    Log("\"" + http_web_request.Address + "\" responded with \"" + r + "\"", false);
                                 }
                             }
                         }
@@ -261,7 +351,7 @@ namespace SAMPServerAnnouncer
                 }
                 catch (Exception e)
                 {
-                    Console.Error.WriteLine(e);
+                    Log(e, true);
                 }
                 return r;
             });

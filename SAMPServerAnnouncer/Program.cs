@@ -14,10 +14,10 @@ namespace SAMPServerAnnouncer
         /// <param name="args">Command line arguments</param>
         internal static void Main(string[] args)
         {
-            if (args.Length >= 2)
+            if (args.Length >= 1)
             {
                 ushort default_port;
-                if (ushort.TryParse(args[1], out default_port))
+                if (ushort.TryParse(args[0], out default_port))
                 {
                     Announcer.Create("announce.json", default_port)?.AnnounceAsync().GetAwaiter().GetResult();
                 }

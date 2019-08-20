@@ -25,6 +25,12 @@ namespace SAMPServerAnnouncer
         private SAMPServersAPIRequestDataContract customServerInfo = default;
 
         /// <summary>
+        /// Error log path
+        /// </summary>
+        [DataMember(IsRequired = false)]
+        private string errorLogPath;
+
+        /// <summary>
         /// IPv4 address
         /// </summary>
         [DataMember(IsRequired = false)]
@@ -37,40 +43,16 @@ namespace SAMPServerAnnouncer
         private string[] ipv4ServiceURIs;
 
         /// <summary>
+        /// Log path
+        /// </summary>
+        [DataMember(IsRequired = false)]
+        private string logPath;
+
+        /// <summary>
         /// User agent
         /// </summary>
         [DataMember(IsRequired = false)]
         private string userAgent;
-
-        /// <summary>
-        /// IPv4 service URIs
-        /// </summary>
-        public string[] IPv4ServiceURIs
-        {
-            get
-            {
-                if (ipv4ServiceURIs == null)
-                {
-                    ipv4ServiceURIs = Array.Empty<string>();
-                }
-                return ipv4ServiceURIs;
-            }
-        }
-
-        /// <summary>
-        /// IPv4 address
-        /// </summary>
-        public string IPv4Address
-        {
-            get
-            {
-                if (ipv4Address == null)
-                {
-                    ipv4Address = string.Empty;
-                }
-                return ipv4Address;
-            }
-        }
 
         /// <summary>
         /// Announcers
@@ -91,6 +73,66 @@ namespace SAMPServerAnnouncer
         /// Custom server information
         /// </summary>
         public SAMPServersAPIRequestDataContract CustomServerInfo => customServerInfo;
+
+        /// <summary>
+        /// Error log path
+        /// </summary>
+        public string ErrorLogPath
+        {
+            get
+            {
+                if (errorLogPath == null)
+                {
+                    errorLogPath = string.Empty;
+                }
+                return errorLogPath;
+            }
+        }
+
+        /// <summary>
+        /// IPv4 address
+        /// </summary>
+        public string IPv4Address
+        {
+            get
+            {
+                if (ipv4Address == null)
+                {
+                    ipv4Address = string.Empty;
+                }
+                return ipv4Address;
+            }
+        }
+
+        /// <summary>
+        /// IPv4 service URIs
+        /// </summary>
+        public string[] IPv4ServiceURIs
+        {
+            get
+            {
+                if (ipv4ServiceURIs == null)
+                {
+                    ipv4ServiceURIs = Array.Empty<string>();
+                }
+                return ipv4ServiceURIs;
+            }
+        }
+
+        /// <summary>
+        /// Log path
+        /// </summary>
+        public string LogPath
+        {
+            get
+            {
+                if (logPath == null)
+                {
+                    logPath = string.Empty;
+                }
+                return logPath;
+            }
+        }
 
         /// <summary>
         /// User agent

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "SAMPServerAnnouncer": {
+      "commandName": "Project",
+      "commandLineArgs": "7777"
+    }
+  }
+}
