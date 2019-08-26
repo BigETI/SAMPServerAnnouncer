@@ -1,4 +1,4 @@
-# SA:MP server announcer
+# San Andreas Multiplayer server announcer
 
 ## Description
 This software is a drop-in replacement for the existing "announce" executables shipped with the San Andreas Multiplayer server packages.
