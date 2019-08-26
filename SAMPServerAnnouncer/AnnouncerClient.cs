@@ -303,7 +303,7 @@ namespace SAMPServerAnnouncer
                             HttpWebRequest http_web_request = WebRequest.CreateHttp(uri_builder.ToString());
                             if (http_web_request != null)
                             {
-                                Log("Requesting at \"" + http_web_request.Address + "\" with API \"" + API + "\"...", false);
+                                Log("Requesting with method \"" + Method + "\" at \"" + http_web_request.Address + "\" with API \"" + API + "\"...", false);
                                 http_web_request.Headers.Add(HttpRequestHeader.Accept, "*/*");
                                 if (!(string.IsNullOrWhiteSpace(UserAgent)))
                                 {

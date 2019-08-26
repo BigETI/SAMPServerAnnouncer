@@ -9,8 +9,7 @@
       "version": "0.3.DL"
     },
     {
-      "api": "samp-servers-api",
-      "useHTTPS": true
+      "api": "samp-servers-api"
     }
   ],
   "errorLogPath": "announce-error.log",
