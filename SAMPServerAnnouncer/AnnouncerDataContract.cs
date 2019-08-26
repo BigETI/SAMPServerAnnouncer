@@ -50,14 +50,14 @@ namespace SAMPServerAnnouncer
         /// <summary>
         /// Use custom server info
         /// </summary>
-        [DataMember(EmitDefaultValue = true, IsRequired = false)]
-        private bool useCustomServerInfo = true;
+        [DataMember(IsRequired = false)]
+        private bool? useCustomServerInfo = default;
 
         /// <summary>
         /// Use HTTPS
         /// </summary>
         [DataMember(IsRequired = false)]
-        private bool useHTTPS = default;
+        private bool? useHTTPS = default;
 
         /// <summary>
         /// User agent
@@ -174,12 +174,12 @@ namespace SAMPServerAnnouncer
         /// <summary>
         /// Use custom server info
         /// </summary>
-        public bool UseCustomServerInfo => useCustomServerInfo;
+        public bool UseCustomServerInfo => ((useCustomServerInfo == null) ? (API == EAnnouncerAPI.SAMPServersAPI) : useCustomServerInfo.Value);
 
         /// <summary>
         /// Use HTTPS
         /// </summary>
-        public bool UseHTTPS => useHTTPS;
+        public bool UseHTTPS => ((useHTTPS == null) ? (API == EAnnouncerAPI.SAMPServersAPI) : useHTTPS.Value);
 
         /// <summary>
         /// User agent
