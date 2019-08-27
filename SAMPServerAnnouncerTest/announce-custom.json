@@ -1,0 +1,43 @@
+{
+  "announcers": [
+    {
+      "api": "legacy",
+      "version": "0.3.7"
+    },
+    {
+      "api": "legacy",
+      "version": "0.3.DL"
+    },
+    {
+      "api": "samp-servers-api"
+    }
+  ],
+  "customServerInfo": {
+    "core": {
+      "ip": "127.0.0.1:7777",
+      "hn": "SA-MP SERVER CLAN tdm [NGRP] [GF EDIT] [Y_INI] [RUS] [BASIC] [GODFATHER] [REFUNDING] [STRCMP]",
+      "pc": 32,
+      "pm": 128,
+      "gm": "Grand Larceny",
+      "la": "English",
+      "pa": false,
+      "vn": "0.3.7-R2"
+    },
+    "ru": {
+      "lagcomp": "On",
+      "mapname": "San Andreas",
+      "version": "0.3.7-R2",
+      "weather": "10",
+      "weburl": "www.sa-mp.com",
+      "worldtime": "10:00"
+    },
+    "description": "An awesome server! Come and play with us.",
+    "banner": "https://i.imgur.com/Juaezhv.jpg",
+    "active": true
+  },
+  "errorLogPath": "announce-error-custom.log",
+  "ipv4ServiceURIs": [
+    "https://ipv4.icanhazip.com/"
+  ],
+  "logPath": "announce-custom.log"
+}

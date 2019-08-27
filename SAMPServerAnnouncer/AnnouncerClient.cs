@@ -242,9 +242,10 @@ namespace SAMPServerAnnouncer
             {
                 (isError ? Console.Error : Console.Out)?.WriteLine(message);
                 string path = (isError ? ErrorLogPath : LogPath);
-                if (!(string.IsNullOrWhiteSpace(path)))
+                string message_string = ((message == null) ? string.Empty : message.ToString());
+                if ((!(string.IsNullOrWhiteSpace(path))) && (message_string.Length > 0))
                 {
-                    File.AppendAllText(path, (message == null) ? "null" : message.ToString() + Environment.NewLine, Encoding.UTF8);
+                    File.AppendAllText(path, message_string + Environment.NewLine, Encoding.UTF8);
                 }
             }
             catch (Exception e)
@@ -288,13 +289,6 @@ namespace SAMPServerAnnouncer
                                     uri_builder.Append(UseHTTPS ? "https://" : "http://");
                                     uri_builder.Append(Host);
                                     uri_builder.Append("/v2/server");
-                                    if (CustomServerInfo == null)
-                                    {
-                                        uri_builder.Append("/");
-                                        uri_builder.Append(IPv4Address);
-                                        uri_builder.Append(":");
-                                        uri_builder.Append(Port.ToString());
-                                    }
                                 }
                                 break;
                         }
@@ -304,46 +298,112 @@ namespace SAMPServerAnnouncer
                             if (http_web_request != null)
                             {
                                 Log("Requesting with method \"" + Method + "\" at \"" + http_web_request.Address + "\" with API \"" + API + "\"...", false);
-                                http_web_request.Headers.Add(HttpRequestHeader.Accept, "*/*");
+                                http_web_request.AllowAutoRedirect = false;
+                                http_web_request.Headers.Add(HttpRequestHeader.Host, Host);
                                 if (!(string.IsNullOrWhiteSpace(UserAgent)))
                                 {
-                                    http_web_request.Headers.Add(HttpRequestHeader.UserAgent, UserAgent);
+                                    http_web_request.UserAgent = UserAgent;
                                 }
                                 if (!(string.IsNullOrWhiteSpace(Referer)))
                                 {
-                                    http_web_request.Headers.Add(HttpRequestHeader.Referer, Referer);
+                                    http_web_request.Referer = Referer;
                                 }
-                                http_web_request.Headers.Add(HttpRequestHeader.Host, Host);
+                                http_web_request.Accept = "*/*";
                                 http_web_request.Method = Method;
-                                if (CustomServerInfo != null)
+                                if (API == EAnnouncerAPI.SAMPServersAPI)
                                 {
-                                    http_web_request.ContentType = "application/json";
-                                    using (MemoryStream request_memory_stream = new MemoryStream())
+                                    http_web_request.ContentType = ((CustomServerInfo == null) ? "application/x-www-form-urlencoded" : "application/json");
+                                    //                                    using (MemoryStream request_memory_stream = new MemoryStream())
+                                    //                                    {
+                                    //                                        if (CustomServerInfo == null)
+                                    //                                        {
+                                    //                                            StreamWriter request_memory_writer = new StreamWriter(request_memory_stream);
+                                    //                                            request_memory_writer.Write("address=");
+                                    //                                            request_memory_writer.Write(IPv4Address);
+                                    //                                            request_memory_writer.Write(":");
+                                    //                                            request_memory_writer.Write(Port);
+                                    //                                            request_memory_writer.Flush();
+                                    //                                        }
+                                    //                                        else
+                                    //                                        {
+                                    //                                            serializer.WriteObject(request_memory_stream, CustomServerInfo);
+                                    //                                        }
+                                    //                                        request_memory_stream.Seek(0L, SeekOrigin.Begin);
+                                    //                                        http_web_request.ContentLength = request_memory_stream.Length;
+                                    //                                        using (Stream request_stream = http_web_request.GetRequestStream())
+                                    //                                        {
+                                    //                                            if (request_stream != null)
+                                    //                                            {
+                                    //                                                request_memory_stream.CopyTo(request_stream);
+                                    //                                            }
+                                    //                                        }
+                                    //#if DEBUG
+                                    //                                        Log(http_web_request.Method + " " + http_web_request.RequestUri.LocalPath + " HTTP/" + http_web_request.ProtocolVersion, false);
+                                    //                                        Log(Encoding.UTF8.GetString(http_web_request.Headers.ToByteArray()), false);
+                                    //                                        request_memory_stream.Seek(0L, SeekOrigin.Begin);
+                                    //                                        Log((new StreamReader(request_memory_stream)).ReadToEnd(), false);
+                                    //#endif
+                                    //                                    }
+
+                                    using (Stream request_stream = http_web_request.GetRequestStream())
                                     {
-                                        serializer.WriteObject(request_memory_stream, CustomServerInfo);
-                                        request_memory_stream.Seek(0L, SeekOrigin.Begin);
-                                        http_web_request.ContentLength = request_memory_stream.Length;
-                                        using (Stream request_stream = http_web_request.GetRequestStream())
+                                        if (CustomServerInfo == null)
                                         {
-                                            if (request_stream != null)
-                                            {
-                                                request_memory_stream.CopyTo(request_stream);
-                                            }
+                                            StreamWriter request_memory_writer = new StreamWriter(request_stream);
+                                            request_memory_writer.Write("address=");
+                                            request_memory_writer.Write(IPv4Address);
+                                            request_memory_writer.Write(":");
+                                            request_memory_writer.Write(Port);
+                                            request_memory_writer.Flush();
                                         }
-#if DEBUG
-                                        request_memory_stream.Seek(0L, SeekOrigin.Begin);
-                                        byte[] data = new byte[request_memory_stream.Length];
-                                        if (request_memory_stream.Read(data) == data.Length)
+                                        else
                                         {
-                                            Log(Encoding.UTF8.GetString(data), false);
+                                            serializer.WriteObject(request_stream, CustomServerInfo);
+                                        }
+                                    }
+                                }
+                                try
+                                {
+                                    using (HttpWebResponse response = http_web_request.GetResponse() as HttpWebResponse)
+                                    {
+                                        r = response.StatusCode;
+                                        Log("\"" + http_web_request.Address + "\" responded with \"" + r + "\"", false);
+#if DEBUG
+                                        using (Stream response_stream = response.GetResponseStream())
+                                        {
+                                            using (StreamReader response_reader = new StreamReader(response_stream))
+                                            {
+                                                Log(response_reader.ReadToEnd(), false);
+                                            }
                                         }
 #endif
                                     }
                                 }
-                                using (HttpWebResponse response = http_web_request.GetResponse() as HttpWebResponse)
+                                catch (WebException e)
                                 {
-                                    r = response.StatusCode;
-                                    Log("\"" + http_web_request.Address + "\" responded with \"" + r + "\"", false);
+                                    HttpWebResponse response = e.Response as HttpWebResponse;
+                                    if (response != null)
+                                    {
+                                        r = response.StatusCode;
+                                        if (r != HttpStatusCode.Found)
+                                        {
+                                            Log(e, true);
+                                        }
+                                        Log("\"" + http_web_request.Address + "\" responded with \"" + r + "\"", (r != HttpStatusCode.Redirect));
+#if DEBUG
+                                        using (Stream response_stream = response.GetResponseStream())
+                                        {
+                                            using (StreamReader response_reader = new StreamReader(response_stream))
+                                            {
+                                                Log(response_reader.ReadToEnd(), true);
+                                            }
+                                        }
+#endif
+                                    }
+                                    else
+                                    {
+                                        Log(e, true);
+                                    }
                                 }
                             }
                         }

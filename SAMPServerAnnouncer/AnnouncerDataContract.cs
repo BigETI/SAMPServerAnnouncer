@@ -33,7 +33,7 @@ namespace SAMPServerAnnouncer
         /// Method
         /// </summary>
         [DataMember(IsRequired = false)]
-        private string method;
+        private string method = default;
 
         /// <summary>
         /// Port
@@ -135,17 +135,7 @@ namespace SAMPServerAnnouncer
         /// <summary>
         /// Method
         /// </summary>
-        public string Method
-        {
-            get
-            {
-                if (string.IsNullOrWhiteSpace(method))
-                {
-                    method = ((API == EAnnouncerAPI.SAMPServersAPI) ? WebRequestMethods.Http.Post : WebRequestMethods.Http.Get);
-                }
-                return method;
-            }
-        }
+        public string Method => method;
 
         /// <summary>
         /// Port
