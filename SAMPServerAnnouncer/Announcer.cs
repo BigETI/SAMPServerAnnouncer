@@ -85,7 +85,7 @@ namespace SAMPServerAnnouncer
                                 {
                                     try
                                     {
-                                        if ((announcer.API == EAnnouncerAPI.SAMPServersAPI) && (ipv4_address == null))
+                                        if (((announcer.API == EAnnouncerAPI.SAMPServersAPI) || (announcer.API == EAnnouncerAPI.SACNRMonitorAPI)) && (ipv4_address == null))
                                         {
                                             ipv4_address = config.IPv4Address;
                                             if (ipv4_address.Length <= 0)
@@ -125,10 +125,10 @@ namespace SAMPServerAnnouncer
                                     {
                                         Console.Error.WriteLine(e);
                                     }
-                                    if ((announcer.API != EAnnouncerAPI.SAMPServersAPI) || (ipv4_address != null))
+                                    if (((announcer.API != EAnnouncerAPI.SAMPServersAPI) && (announcer.API != EAnnouncerAPI.SACNRMonitorAPI)) || (ipv4_address != null))
                                     {
                                         SAMPServersAPIRequestDataContract custom_server_info = (announcer.UseCustomServerInfo ? config.CustomServerInfo : null);
-                                        announcer_clients.Add(new AnnouncerClient(announcer.API, config.ErrorLogPath, custom_server_info, announcer.Host, (announcer.API == EAnnouncerAPI.SAMPServersAPI) ? ipv4_address : string.Empty, config.LogPath, (announcer.Method == null) ? (announcer.API == EAnnouncerAPI.SAMPServersAPI ? ((custom_server_info == null) ? WebRequestMethods.Http.Post : "PATCH") : WebRequestMethods.Http.Get) : announcer.Method, announcer.Port, announcer.Referer, announcer.UseHTTPS, announcer.UserAgent, announcer.Version));
+                                        announcer_clients.Add(new AnnouncerClient(announcer.API, config.ErrorLogPath, custom_server_info, announcer.Host, ((announcer.API == EAnnouncerAPI.SAMPServersAPI) || (announcer.API == EAnnouncerAPI.SACNRMonitorAPI)) ? ipv4_address : string.Empty, config.LogPath, (announcer.Method == null) ? ((announcer.API == EAnnouncerAPI.SACNRMonitorAPI) ? WebRequestMethods.Http.Post : ((announcer.API == EAnnouncerAPI.SAMPServersAPI) ? ((custom_server_info == null) ? WebRequestMethods.Http.Post : "PATCH") : WebRequestMethods.Http.Get)) : announcer.Method, announcer.Port, announcer.Referer, announcer.UseHTTPS, announcer.UserAgent, announcer.Version));
                                     }
                                 }
                             }

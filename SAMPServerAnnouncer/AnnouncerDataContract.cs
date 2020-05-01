@@ -1,5 +1,4 @@
-﻿using System.Net;
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 
 /// <summary>
 /// San Andreas Multiplayer server announcer namespace
@@ -99,6 +98,17 @@ namespace SAMPServerAnnouncer
                             case "sampserversapi":
                                 apiValue = EAnnouncerAPI.SAMPServersAPI;
                                 break;
+                            case "sacnr-monitor-api":
+                            case "sacnrmonitor-api":
+                            case "sacnr-monitorapi":
+                            case "sacnrmonitorapi":
+                            case "sacnr-api":
+                            case "sacnrapi":
+                            case "sacnr-monitor":
+                            case "sacnrmonitor":
+                            case "sacnr":
+                                apiValue = EAnnouncerAPI.SACNRMonitorAPI;
+                                break;
                         }
                     }
                 }
@@ -122,6 +132,9 @@ namespace SAMPServerAnnouncer
                             break;
                         case EAnnouncerAPI.SAMPServersAPI:
                             host = "api.samp-servers.net";
+                            break;
+                        case EAnnouncerAPI.SACNRMonitorAPI:
+                            host = "monitor.sacnr.com";
                             break;
                         default:
                             host = string.Empty;
@@ -169,7 +182,7 @@ namespace SAMPServerAnnouncer
         /// <summary>
         /// Use HTTPS
         /// </summary>
-        public bool UseHTTPS => ((useHTTPS == null) ? (API == EAnnouncerAPI.SAMPServersAPI) : useHTTPS.Value);
+        public bool UseHTTPS => ((useHTTPS == null) ? ((API == EAnnouncerAPI.SAMPServersAPI) || (API == EAnnouncerAPI.SACNRMonitorAPI)) : useHTTPS.Value);
 
         /// <summary>
         /// User agent
@@ -180,7 +193,7 @@ namespace SAMPServerAnnouncer
             {
                 if (string.IsNullOrWhiteSpace(userAgent))
                 {
-                    userAgent = ((API == EAnnouncerAPI.Legacy) ? "SAMP/0.30" : "SAMPServerAnnouncer/1.0");
+                    userAgent = ((API == EAnnouncerAPI.Legacy) ? "SAMP/0.30" : "SAMPServerAnnouncer/1.1");
                 }
                 return userAgent.Trim();
             }

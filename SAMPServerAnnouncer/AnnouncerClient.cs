@@ -139,7 +139,7 @@ namespace SAMPServerAnnouncer
             {
                 if (method == null)
                 {
-                    method = ((API == EAnnouncerAPI.SAMPServersAPI) ? WebRequestMethods.Http.Post : WebRequestMethods.Http.Get);
+                    method = (((API == EAnnouncerAPI.SAMPServersAPI) || (API == EAnnouncerAPI.SACNRMonitorAPI)) ? WebRequestMethods.Http.Post : WebRequestMethods.Http.Get);
                 }
                 return method;
             }
@@ -291,6 +291,15 @@ namespace SAMPServerAnnouncer
                                     uri_builder.Append("/v2/server");
                                 }
                                 break;
+                            case EAnnouncerAPI.SACNRMonitorAPI:
+                                if (!(string.IsNullOrWhiteSpace(IPv4Address)))
+                                {
+                                    uri_builder = new StringBuilder();
+                                    uri_builder.Append(UseHTTPS ? "https://" : "http://");
+                                    uri_builder.Append(Host);
+                                    uri_builder.Append("/api/?Action=announce");
+                                }
+                                break;
                         }
                         if (uri_builder != null)
                         {
@@ -310,57 +319,39 @@ namespace SAMPServerAnnouncer
                                 }
                                 http_web_request.Accept = "*/*";
                                 http_web_request.Method = Method;
-                                if (API == EAnnouncerAPI.SAMPServersAPI)
+                                switch (API)
                                 {
-                                    http_web_request.ContentType = ((CustomServerInfo == null) ? "application/x-www-form-urlencoded" : "application/json");
-                                    //                                    using (MemoryStream request_memory_stream = new MemoryStream())
-                                    //                                    {
-                                    //                                        if (CustomServerInfo == null)
-                                    //                                        {
-                                    //                                            StreamWriter request_memory_writer = new StreamWriter(request_memory_stream);
-                                    //                                            request_memory_writer.Write("address=");
-                                    //                                            request_memory_writer.Write(IPv4Address);
-                                    //                                            request_memory_writer.Write(":");
-                                    //                                            request_memory_writer.Write(Port);
-                                    //                                            request_memory_writer.Flush();
-                                    //                                        }
-                                    //                                        else
-                                    //                                        {
-                                    //                                            serializer.WriteObject(request_memory_stream, CustomServerInfo);
-                                    //                                        }
-                                    //                                        request_memory_stream.Seek(0L, SeekOrigin.Begin);
-                                    //                                        http_web_request.ContentLength = request_memory_stream.Length;
-                                    //                                        using (Stream request_stream = http_web_request.GetRequestStream())
-                                    //                                        {
-                                    //                                            if (request_stream != null)
-                                    //                                            {
-                                    //                                                request_memory_stream.CopyTo(request_stream);
-                                    //                                            }
-                                    //                                        }
-                                    //#if DEBUG
-                                    //                                        Log(http_web_request.Method + " " + http_web_request.RequestUri.LocalPath + " HTTP/" + http_web_request.ProtocolVersion, false);
-                                    //                                        Log(Encoding.UTF8.GetString(http_web_request.Headers.ToByteArray()), false);
-                                    //                                        request_memory_stream.Seek(0L, SeekOrigin.Begin);
-                                    //                                        Log((new StreamReader(request_memory_stream)).ReadToEnd(), false);
-                                    //#endif
-                                    //                                    }
-
-                                    using (Stream request_stream = http_web_request.GetRequestStream())
-                                    {
-                                        if (CustomServerInfo == null)
+                                    case EAnnouncerAPI.SAMPServersAPI:
+                                        http_web_request.ContentType = ((CustomServerInfo == null) ? "application/x-www-form-urlencoded" : "application/json");
+                                        using (Stream request_stream = http_web_request.GetRequestStream())
+                                        {
+                                            if (CustomServerInfo == null)
+                                            {
+                                                StreamWriter request_memory_writer = new StreamWriter(request_stream);
+                                                request_memory_writer.Write("address=");
+                                                request_memory_writer.Write(IPv4Address);
+                                                request_memory_writer.Write(":");
+                                                request_memory_writer.Write(Port);
+                                                request_memory_writer.Flush();
+                                            }
+                                            else
+                                            {
+                                                serializer.WriteObject(request_stream, CustomServerInfo);
+                                            }
+                                        }
+                                        break;
+                                    case EAnnouncerAPI.SACNRMonitorAPI:
+                                        http_web_request.ContentType = "application/x-www-form-urlencoded";
+                                        using (Stream request_stream = http_web_request.GetRequestStream())
                                         {
                                             StreamWriter request_memory_writer = new StreamWriter(request_stream);
-                                            request_memory_writer.Write("address=");
+                                            request_memory_writer.Write("ipp=");
                                             request_memory_writer.Write(IPv4Address);
                                             request_memory_writer.Write(":");
                                             request_memory_writer.Write(Port);
                                             request_memory_writer.Flush();
                                         }
-                                        else
-                                        {
-                                            serializer.WriteObject(request_stream, CustomServerInfo);
-                                        }
-                                    }
+                                        break;
                                 }
                                 try
                                 {

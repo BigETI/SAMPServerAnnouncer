@@ -21,6 +21,11 @@ namespace SAMPServerAnnouncer
         /// <summary>
         /// samp-servers-api announcer API
         /// </summary>
-        SAMPServersAPI
+        SAMPServersAPI,
+
+        /// <summary>
+        /// SACNR Monitor API
+        /// </summary>
+        SACNRMonitorAPI
     }
 }

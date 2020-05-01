@@ -7,7 +7,7 @@ Some servers are [compatible](https://github.com/AGraber/samp-compat) with multi
 
 This software requires a configuration file to be specified, where and how to announce the server, which is [documented](https://github.com/BigETI/SAMPServerAnnouncer/wiki/Configuration) at https://github.com/BigETI/SAMPServerAnnouncer/wiki/Configuration
 
-Additionally this software supports [samp-servers-api](https://github.com/Southclaws/samp-servers-api), so server owners can display custom information for their servers.
+Additionally this software supports [samp-servers-api](https://github.com/Southclaws/samp-servers-api) and [SACNR Monitor](https://monitor.sacnr.com) API, so server owners can display custom information for their servers.
 
 ## Documentation
 The [documentation](https://github.com/BigETI/SAMPServerAnnouncer/wiki) is available at https://github.com/BigETI/SAMPServerAnnouncer/wiki

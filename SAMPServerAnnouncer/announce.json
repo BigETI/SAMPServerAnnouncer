@@ -5,11 +5,10 @@
       "version": "0.3.7"
     },
     {
-      "api": "legacy",
-      "version": "0.3.DL"
+      "api": "samp-servers-api"
     },
     {
-      "api": "samp-servers-api"
+      "api": "sacnr-monitor-api"
     }
   ],
   "errorLogPath": "announce-error.log",
